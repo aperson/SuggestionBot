@@ -30,6 +30,7 @@ class Reddit:
                 self.modhash = data['json']['data']['modhash']
     
     def submit(self, subreddit, title, url=None, text=None):
+        '''Makes a submission on reddit and returns the url.'''
         body = {'title' : title, 'sr' : subreddit, 'uh' : self.modhash}
         if url:
             body['kind'] = 'link'
@@ -56,6 +57,8 @@ class Reddit:
             return(json.loads(w.read().decode('utf-8'))['data']['children'])
 
 def bot():
+    '''This is the main bot function that, when ran, will grab the last submission+comments, edit
+    the last submission, and create the next submission for the day.'''
     submission_template = '''Hello /r/Minecraft, welcome to the official suggestion post for today \
     ({date}).  This is the place where all [Suggestion], [Idea], [Mod Request], and other \
     submissions of the like are to go.  If you have an [Idea], post it as a top-level comment \
