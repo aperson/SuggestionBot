@@ -86,11 +86,12 @@ def bot():
     
     submission_history = r.get_feed('/user/{}/submitted/'.format(USERNAME))
     
+    # This wont work unless we have an account dedicated for the bot, which we don't atm.
+    #last_submission = r.get_feed('/user/{}/submitted/'.format('USERNAME'))['data']['children'][0]['data']['permalink']
+    # This will:
     for i in submission_history:
         if i['data']['title'].startswith("[Suggestion]"):
             last_submission = i['data']
             break
     
-    # This wont work unless we have an account dedicated for the bot, which we don't atm.
-    #last_submission = r.get_feed('/user/aperson/submitted/')['data']['children'][0]['data']['permalink']
     last_comments = r.get_feed(last_submission)['data']['children']
