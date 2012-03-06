@@ -59,6 +59,7 @@ class Reddit:
 def bot():
     '''This is the main bot function that, when ran, will grab the last submission+comments, edit
     the last submission, and create the next submission for the day.'''
+    
     submission_template = '''Hello /r/Minecraft, welcome to the official suggestion post for today \
     ({date}).  This is the place where all [Suggestion], [Idea], [Mod Request], and other \
     submissions of the like are to go.  If you have an [Idea], post it as a top-level comment \
@@ -83,5 +84,13 @@ def bot():
     
     r = Reddit(USERNAME, PASSWORD)
     
-    last_submission = r.get_feed('/user/aperson/submitted/')['data']['children'][0]['data']['permalink']
+    submission_history = r.get_feed('/user/{}/submitted/'.format(USERNAME))
+    
+    for i in submission_history:
+        if i['data']['title'].startswith("[Suggestion]"):
+            last_submission = i['data']
+            break
+    
+    # This wont work unless we have an account dedicated for the bot, which we don't atm.
+    #last_submission = r.get_feed('/user/aperson/submitted/')['data']['children'][0]['data']['permalink']
     last_comments = r.get_feed(last_submission)['data']['children']
