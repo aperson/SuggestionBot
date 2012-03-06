@@ -54,7 +54,12 @@ class Reddit:
         if not url.startswith('/'): url = '/' + url
         if not url.endswith('/'): url = url + '/'
         with self.opener.open('http://www.reddit.com' + url + '.json') as w:
-            return(json.loads(w.read().decode('utf-8'))['data']['children'])
+            output = json.loads(w.read().decode('utf-8'))
+            if 'data' in output:
+                return output['data']['children']
+            else:
+                # We don't care about the .self text of the last submission
+                return output[1]
 
 def bot():
     '''This is the main bot function that, when ran, will grab the last submission+comments, edit
@@ -87,11 +92,11 @@ def bot():
     submission_history = r.get_feed('/user/{}/submitted/'.format(USERNAME))
     
     # This wont work unless we have an account dedicated for the bot, which we don't atm.
-    #last_submission = r.get_feed('/user/{}/submitted/'.format('USERNAME'))['data']['children'][0]['data']['permalink']
-    # This will:
+    #last_submission = r.get_feed('/user/{}/submitted/'.format('USERNAME'))[0]['data']['permalink']
+    #last_comments = r.get_feed(last_submission')['data']['children']
+    # This will because aperson would never start a submission with [Suggestion]:
     for i in submission_history:
         if i['data']['title'].startswith("[Suggestion]"):
-            last_submission = i['data']
+            last_comments = r.get_feed(i['data']['permalink'])
             break
     
-    last_comments = r.get_feed(last_submission)['data']['children']
