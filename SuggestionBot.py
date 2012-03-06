@@ -10,7 +10,6 @@ import http.cookiejar
 def sigint_handler(signal, frame):
     '''Handles ^c'''
     print('Recieved SIGINT! Exiting...')
-    print('Ran for {} seconds!'.format(time.time() - started))
     sys.exit(0)
 
 
@@ -79,7 +78,7 @@ def bot():
     
     title_template = '''[Suggestion] Post for {date}'''
     
-    ap = Reddit(USERNAME, PASSWORD)
+    r = Reddit(USERNAME, PASSWORD)
     
-    last_submission = ap.get_feed('/user/aperson/submitted/')['data']['children'][0]['data']['permalink']
-    last_comments = ap.get_feed(last_submission)['data']['children']
+    last_submission = r.get_feed('/user/aperson/submitted/')['data']['children'][0]['data']['permalink']
+    last_comments = r.get_feed(last_submission)['data']['children']
