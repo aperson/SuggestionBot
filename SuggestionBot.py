@@ -59,7 +59,7 @@ class Reddit:
                 return output['data']['children']
             else:
                 # We don't care about the .self text of the last submission
-                return output[1]
+                return output[1]['data']['children']
 
 def bot():
     '''This is the main bot function that, when ran, will grab the last submission+comments, edit
@@ -83,12 +83,13 @@ def bot():
     
     [<last>]({last})'''
     
-    comment_template = '''**{author}**[{score}][+{ups}/-{downs}]:\n\n>{comment}'''
+    comment_template = '''**{author}**[{score}][+{ups}/-{downs}]:\n\n>{body}'''
     
-    title_template = '''[Suggestion] Post for {date}'''
-    
+    # login
     r = Reddit(USERNAME, PASSWORD)
+    r.login()
     
+    # get prequisite info about last submission
     submission_history = r.get_feed('/user/{}/submitted/'.format(USERNAME))
     
     # This wont work unless we have an account dedicated for the bot, which we don't atm.
@@ -96,7 +97,33 @@ def bot():
     #last_comments = r.get_feed(last_submission')['data']['children']
     # This will because aperson would never start a submission with [Suggestion]:
     for i in submission_history:
-        if i['data']['title'].startswith("[Suggestion]"):
-            last_comments = r.get_feed(i['data']['permalink'])
+        if i['data']['title'].startswith('[Suggestion]'):
+            last_url = i['data']['permalink']
+            last_comments = r.get_feed(last_url)
             break
     
+    # build from the comment_template(s) (sometimes I don't feel like doing this the 'right' way)
+    comment_0 = comment_template.format(author=last_comments[0]['data']['author'],
+                                         score=last_comments[0]['data']['score'],
+                                         ups=last_comments[0]['data']['ups'],
+                                         downs=last_comments[0]['data']['downs'],
+                                         body=last_comments[0]['data']['body']
+                                        )
+    
+    comment_1 = comment_template.format(author=last_comments[1]['data']['author'],
+                                         score=last_comments[1]['data']['score'],
+                                         ups=last_comments[1]['data']['ups'],
+                                         downs=last_comments[1]['data']['downs'],
+                                         body=last_comments[1]['data']['body']
+                                        )
+    
+    comment_2 = comment_template.format(author=last_comments[2]['data']['author'],
+                                         score=last_comments[2]['data']['score'],
+                                         ups=last_comments[2]['data']['ups'],
+                                         downs=last_comments[2]['data']['downs'],
+                                         body=last_comments[2]['data']['body']
+                                        )
+    
+    submission_title = '''[Suggestion] Post for {date}'''.format(date=time.strftime('%y/%m/%d')
+    submission_text = submission_template.format(comment_0=comment_0, comment_1=comment_1,
+                                                  comment_2=comment_2, last=last_url)
