@@ -88,9 +88,11 @@ def bot():
     # login
     r = Reddit(USERNAME, PASSWORD)
     r.login()
+    time.sleep(2)
     
     # get prequisite info about last submission
     submission_history = r.get_feed('/user/{}/submitted/'.format(USERNAME))
+    time.sleep(2)
     
     # This wont work unless we have an account dedicated for the bot, which we don't atm.
     #last_submission = r.get_feed('/user/{}/submitted/'.format('USERNAME'))[0]['data']['permalink']
@@ -100,6 +102,7 @@ def bot():
         if i['data']['title'].startswith('[Suggestion]'):
             last_url = i['data']['permalink']
             last_comments = r.get_feed(last_url)
+            time.sleep(2)
             break
     
     # build from the comment_template(s) (sometimes I don't feel like doing this the 'right' way)
