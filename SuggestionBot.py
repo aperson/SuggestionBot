@@ -75,19 +75,15 @@ def bot():
     '''This is the main bot function that, when ran, will grab the last submission+comments, edit
     the last submission, and create the next submission for the day.'''
     
-    submission_template = '''Hello /r/Minecraft, welcome to the official suggestion post for today \
-    ({date}).  This is the place where all [Suggestion], [Idea], [Mod Request], and other \
-    submissions of the like are to go.  If you have an [Idea], post it as a top-level comment \
-    and if it's a good one, hopefully it'll be upvoted and commented on.\
-    \n\nHere's the top three comments from the last submission:\
-    \n\n{comment_0}\
-    \n\n{comment_1}\
-    \n\n{comment_2}\
-    \n\n----\
-    \n\nNavigation:\
-    \n\n[<previous>]({last})'''
+    submission_base = '''Hello /r/Minecraft, welcome to the official suggestion post for today.\
+    This is the place where all [Suggestion], [Idea], [Mod Request], and other submissions of the \
+    like are to go.  If you have an [Idea], post it as a top-level comment and if it's a good one, \
+    hopefully it'll be upvoted and commented on.\
+    \n\nHere's the top ~three comments from the last submission:'''
     
-    comment_template = '''**{author}** [+{ups}/-{downs}]:\n\n>{body}'''
+    navigation_template = '''\n\n----\n\nNavigation:\n\n[<- previous ]({})'''
+    
+    comment_template = '''\n\n**{author}** [{score}][+{ups}/-{downs}]:\n\n>{body}'''
     
     # login
     r = Reddit(USERNAME, PASSWORD)
@@ -101,8 +97,12 @@ def bot():
     time.sleep(2)
     
     # This wont work unless we have an account dedicated for the bot, which we don't atm.
-    #last_submission = r.get_feed('/user/{}/submitted/'.format('USERNAME'))[0]['data']['permalink']
-    #last_comments = r.get_feed(last_submission')['data']['children']
+    #last_submission = r.get_feed('/user/{}/submitted/'.format('USERNAME'))[0]['data']
+    #last_url = last_submission['permalink']
+    #last_thing_id = last_submission['name']
+    #last_submission = r.get_feed(last_submission['permalink']')['data']['children']
+    #last_text = last_submission[1]['data']['children'][0]['data']['children']['selftext']
+    #last_comments = last_submission[1]['data']['children']
     # This will because aperson would never start a submission with [Suggestion]:
     for i in submission_history:
         if i['data']['title'].startswith('[Suggestion]'):
@@ -114,36 +114,34 @@ def bot():
             time.sleep(2)
             break
     
-    # build from the comment_template(s) (sometimes I don't feel like doing this the 'right' way)
-    comment_0 = comment_template.format(author=last_comments[0]['data']['author'],
-                                         ups=last_comments[0]['data']['ups'],
-                                         downs=last_comments[0]['data']['downs'],
-                                         body=last_comments[0]['data']['body']
-                                        )
+    top_comments = []
     
-    comment_1 = comment_template.format(author=last_comments[1]['data']['author'],
-                                         ups=last_comments[1]['data']['ups'],
-                                         downs=last_comments[1]['data']['downs'],
-                                         body=last_comments[1]['data']['body']
-                                        )
+    for i in last_comments:
+        i['data']['score'] = i['data']['ups'] + i['data']['downs']
+        top_comments.append(i['data'])
     
-    comment_2 = comment_template.format(author=last_comments[2]['data']['author'],
-                                         ups=last_comments[2]['data']['ups'],
-                                         downs=last_comments[2]['data']['downs'],
-                                         body=last_comments[2]['data']['body']
-                                        )
+    top_comments.sort(key=lambda x: -x['score'])
     
+    formatted_comments = ''
+    count = 0
+    for i in formatted_comments:
+        count += 1
+        formatted_comments += comment_template.format(author=top_comments[i]['author'],
+                                                       score=top_comments[i]['score'],
+                                                       ups=top_comments[i]['ups'],
+                                                       downs=top_comments[i]['downs'],
+                                                       body=top_comments[i]['body'].replace('\n', '\n>')
+                                                      )
+        if count == 3: break
+
     submission_title = '''[Suggestion] Post for {}'''.format(strfdate)
-    submission_text = submission_template.format(date=strfdate, comment_0=comment_0,
-                                                  comment_1=comment_1, comment_2=comment_2,
-                                                  last=last_url
-                                                  )
+    submission_text = submission_base + formatted_comments + navigation_template.format(last_url)
     
     # Submit!
     submission_url = r.submit(SUBREDDIT, submission_title, text=submission_text)
     
     # Edit the last submission so it includes a <next> link
-    r.edit_submission(last_thing_id, '{}|[<next>]({})'.format(last_text, submission_url))
+    r.edit_submission(last_thing_id, '{}|[ next ->]({})'.format(last_text, submission_url))
 
 if __name__ == '__main__':
     bot()
