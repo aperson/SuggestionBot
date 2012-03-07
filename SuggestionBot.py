@@ -81,7 +81,7 @@ def bot():
     hopefully it'll be upvoted and commented on.\
     \n\nHere's the top ~three comments from the last submission:'''
     
-    navigation_template = '''\n\n----\n\nNavigation:\n\n[<- previous ]({})'''
+    navigation_template = '''\n\n----\n\nNavigation:\n\n[<- prev ]({})'''
     
     comment_template = '''\n\n**{author}** [{score}][+{ups}/-{downs}]:\n\n>{body}'''
     
@@ -123,9 +123,9 @@ def bot():
     top_comments.sort(key=lambda x: -x['score'])
     
     formatted_comments = ''
-    if len(top_comments) >= 3:
+    if top_comments:
         count = 0
-        for i in formatted_comments:
+        for i in top_comments:
             count += 1
             formatted_comments += comment_template.format(author=top_comments[i]['author'],
                                                            score=top_comments[i]['score'],
@@ -144,7 +144,9 @@ def bot():
     submission_url = r.submit(SUBREDDIT, submission_title, text=submission_text)
     
     # Edit the last submission so it includes a <next> link
-    r.edit_submission(last_thing_id, '{}|[ next ->]({})'.format(last_text, submission_url))
+    r.edit_submission(last_thing_id, '{}|[ next ->]({})'.format(last_text.replace('&lt;', '<'
+                                                                 ).replace('&gt;', '>'),
+                                                                 submission_url))
 
 if __name__ == '__main__':
     bot()
