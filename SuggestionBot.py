@@ -13,15 +13,15 @@ def sigint_handler(signal, frame):
     sys.exit(0)
 
 
-class Reddit:
+class Bot:
     def __init__(self, username, password):
         self.cj = http.cookiejar.CookieJar() 
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cj))
-        self.username, self.password = username, password
+        self._login(username, password)
     
-    def login(self):
+    def _login(self, username, password):
         '''Logs into reddit.  Returns the modhash.'''
-        body = {'user' : self.username, 'passwd' : self.password, 'api_type' : 'json'}
+        body = {'user' : username, 'passwd' : password, 'api_type' : 'json'}
         body = urlencode(body).encode('utf-8')
         
         with self.opener.open('https://www.reddit.com/api/login', body) as w:
@@ -70,8 +70,22 @@ class Reddit:
             else:
                 # We don't care about the .self text of the last submission
                 return output
+    
+    def puburl(self, url):
+        '''Creates or updates a tiny.cc url.  If PUBURL does not exist in the credentials file, it will
+        be created.  Otherwise, we're doing an update'''
+        
+        body = {'login': TINYCC, 'apiKey' : TINYCCKEY, 'c' : 'rest_api', 'version' : '2.0.3', 
+                'format' : 'json', 'longUrl' : url, 'hash' : PUBURL, 'shortUrl' : PUBURL}
+        
+        if PUBURL:
+            body['m'] = 'edit'
+        else:
+            body['m'] = 'create'
+        with self.opener.open('http://tiny.cc/?' + urlencode(body)) as w:
+            return json.loads(w.read().decode('utf-8'))['results']['short_url']
 
-def bot():
+def main():
     '''This is the main bot function that, when ran, will grab the last submission+comments, edit
     the last submission, and create the next submission for the day.'''
     
@@ -86,14 +100,13 @@ def bot():
     comment_template = '''\n\n**{author}** [{score}][+{ups}/-{downs}]:\n\n>{body}'''
     
     # login
-    r = Reddit(USERNAME, PASSWORD)
-    r.login()
+    b = Bot(USERNAME, PASSWORD)
     time.sleep(2)
     
     strfdate = time.strftime('%y/%m/%d')
     
     # get prequisite info about last submission
-    submission_history = r.get_feed('/user/{}/submitted/'.format(USERNAME))
+    submission_history = b.get_feed('/user/{}/submitted/'.format(USERNAME))
     time.sleep(2)
     
     # This wont work unless we have an account dedicated for the bot, which we don't atm.
@@ -108,7 +121,7 @@ def bot():
         if i['data']['title'].startswith('[Suggestion]'):
             last_url = i['data']['permalink']
             last_thing_id = i['data']['name']
-            last_submission = r.get_feed(last_url)
+            last_submission = b.get_feed(last_url)
             last_text = last_submission[0]['data']['children'][0]['data']['selftext']
             last_comments = last_submission[1]['data']['children']
             time.sleep(2)
@@ -139,12 +152,15 @@ def bot():
     submission_text = submission_base + formatted_comments + navigation_template.format(last_url)
     
     # Submit!
-    submission_url = r.submit(SUBREDDIT, submission_title, text=submission_text)
+    submission_url = b.submit(SUBREDDIT, submission_title, text=submission_text)
     
     # Edit the last submission so it includes a <next> link
-    r.edit_submission(last_thing_id, '{}|[ next ->]({})'.format(last_text.replace('&lt;', '<'
+    b.edit_submission(last_thing_id, '{}|[ next ->]({})'.format(last_text.replace('&lt;', '<'
                                                                  ).replace('&gt;', '>'),
                                                                  submission_url))
+    
+    # Finally, we need to update the permalink
+    b.puburl(submission_url)
 
 if __name__ == '__main__':
-    bot()
+    main()
