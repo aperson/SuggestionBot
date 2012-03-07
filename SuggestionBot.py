@@ -135,7 +135,7 @@ def bot():
                                                           )
             if count == 3: break
     else:
-        formatted_comments = 'Looks like there were no suggestions yesterday.'
+        formatted_comments = '\n\nLooks like there were no suggestions yesterday.'
 
     submission_title = '''[Suggestion] Post for {}'''.format(strfdate)
     submission_text = submission_base + formatted_comments + navigation_template.format(last_url)
