@@ -123,16 +123,19 @@ def bot():
     top_comments.sort(key=lambda x: -x['score'])
     
     formatted_comments = ''
-    count = 0
-    for i in formatted_comments:
-        count += 1
-        formatted_comments += comment_template.format(author=top_comments[i]['author'],
-                                                       score=top_comments[i]['score'],
-                                                       ups=top_comments[i]['ups'],
-                                                       downs=top_comments[i]['downs'],
-                                                       body=top_comments[i]['body'].replace('\n', '\n>')
-                                                      )
-        if count == 3: break
+    if len(top_comments) >= 3:
+        count = 0
+        for i in formatted_comments:
+            count += 1
+            formatted_comments += comment_template.format(author=top_comments[i]['author'],
+                                                           score=top_comments[i]['score'],
+                                                           ups=top_comments[i]['ups'],
+                                                           downs=top_comments[i]['downs'],
+                                                           body=top_comments[i]['body'].replace('\n', '\n>')
+                                                          )
+            if count == 3: break
+    else:
+        formatted_comments = 'Looks like there were no suggestions yesterday.'
 
     submission_title = '''[Suggestion] Post for {}'''.format(strfdate)
     submission_text = submission_base + formatted_comments + navigation_template.format(last_url)
