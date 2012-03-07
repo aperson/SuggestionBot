@@ -127,11 +127,9 @@ def bot():
         count = 0
         for i in top_comments:
             count += 1
-            formatted_comments += comment_template.format(author=top_comments[i]['author'],
-                                                           score=top_comments[i]['score'],
-                                                           ups=top_comments[i]['ups'],
-                                                           downs=top_comments[i]['downs'],
-                                                           body=top_comments[i]['body'].replace('\n', '\n>')
+            formatted_comments += comment_template.format(author=i['author'], score=i['score'],
+                                                           ups=i['ups'], downs=i['downs'],
+                                                           body=i['body'].replace('\n', '\n>')
                                                           )
             if count == 3: break
     else:
