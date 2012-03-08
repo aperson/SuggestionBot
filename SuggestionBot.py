@@ -88,11 +88,12 @@ def main():
     '''This is the main bot function that, when ran, will grab the last submission+comments, edit
     the last submission, and create the next submission for the day.'''
     
-    submission_base = '''Hello /r/Minecraft, welcome to the official suggestion post for today.\
-    This is the place where all [Suggestion], [Idea], [Mod Request], and other submissions of the \
-    like are to go.  If you have an [Idea], post it as a top-level comment and if it's a good one, \
-    hopefully it'll be upvoted and commented on.\
-    \n\nHere's the top ~three comments from the last submission:'''
+    submission_base = '''**Having trouble seeing just the suggestions?**  **Try clicking\
+    *[this](http://db.tt/ZU2USTiK)*./n/nHello /r/Minecraft, welcome to the official suggestion post\
+    for today. This is the place where all [Suggestion], [Idea], [Mod Request], and other\
+    submissions of the like are to go.  If you have an [Idea], post it as a top-level comment and\
+    if it's a good one, hopefully it'll be upvoted and commented on.\n\nHere's the top ~three\
+    comments from the last submission:'''
     
     navigation_template = '''\n\n----\n\nNavigation:\n\n[<- prev ]({})'''
     
@@ -166,7 +167,7 @@ def main():
     #print(b.puburl(submission_url))
     # So, we hack it:
     with open(DBPATH, 'w') as f:
-        f.write('<html><head><meta http-equiv="Refresh" content="0;url={}" /></head><body></body></html>'.format(submission_url))
+        f.write('<html><head><meta http-equiv="Refresh" content="0;url={}?depth=1" /></head><body></body></html>'.format(submission_url))
 
 if __name__ == '__main__':
     main()
