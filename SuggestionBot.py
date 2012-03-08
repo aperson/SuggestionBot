@@ -68,7 +68,6 @@ class Bot:
             if 'data' in output:
                 return output['data']['children']
             else:
-                # We don't care about the .self text of the last submission
                 return output
     
     def puburl(self, url):
@@ -83,7 +82,7 @@ class Bot:
         else:
             body['m'] = 'create'
         with self.opener.open('http://tiny.cc/?' + urlencode(body)) as w:
-            return json.loads(w.read().decode('utf-8'))['results']['short_url']
+            return json.loads(w.read().decode('utf-8'))['results']
 
 def main():
     '''This is the main bot function that, when ran, will grab the last submission+comments, edit
@@ -110,27 +109,28 @@ def main():
     time.sleep(2)
     
     # This wont work unless we have an account dedicated for the bot, which we don't atm.
-    #last_submission = r.get_feed('/user/{}/submitted/'.format('USERNAME'))[0]['data']
-    #last_url = last_submission['permalink']
-    #last_thing_id = last_submission['name']
-    #last_submission = r.get_feed(last_submission['permalink']')['data']['children']
-    #last_text = last_submission[1]['data']['children'][0]['data']['children']['selftext']
-    #last_comments = last_submission[1]['data']['children']
+    last_submission = b.get_feed('/user/{}/submitted/'.format(USERNAME))[0]['data']
+    last_url = last_submission['permalink']
+    last_thing_id = last_submission['name']
+    last_submission = b.get_feed(last_url)
+    time.sleep(2)
+    last_text = last_submission[0]['data']['children'][0]['data']['selftext']
+    last_comments = last_submission[1]['data']['children']
     # This will because aperson would never start a submission with [Suggestion]:
-    for i in submission_history:
-        if i['data']['title'].startswith('[Suggestion]'):
-            last_url = i['data']['permalink']
-            last_thing_id = i['data']['name']
-            last_submission = b.get_feed(last_url)
-            last_text = last_submission[0]['data']['children'][0]['data']['selftext']
-            last_comments = last_submission[1]['data']['children']
-            time.sleep(2)
-            break
+    #for i in submission_history:
+        #if i['data']['title'].startswith('[Suggestion]'):
+            #last_url = i['data']['permalink']
+            #last_thing_id = i['data']['name']
+            #last_submission = b.get_feed(last_url)
+            #last_text = last_submission[0]['data']['children'][0]['data']['selftext']
+            #last_comments = last_submission[1]['data']['children']
+            #time.sleep(2)
+            #break
     
     top_comments = []
     
     for i in last_comments:
-        i['data']['score'] = i['data']['ups'] + i['data']['downs']
+        i['data']['score'] = i['data']['ups'] - i['data']['downs']
         top_comments.append(i['data'])
     
     top_comments.sort(key=lambda x: -x['score'])
@@ -153,6 +153,7 @@ def main():
     
     # Submit!
     submission_url = b.submit(SUBREDDIT, submission_title, text=submission_text)
+    time.sleep(2)
     
     # Edit the last submission so it includes a <next> link
     b.edit_submission(last_thing_id, '{}|[ next ->]({})'.format(last_text.replace('&lt;', '<'
@@ -160,7 +161,11 @@ def main():
                                                                  submission_url))
     
     # Finally, we need to update the permalink
-    b.puburl(submission_url)
+    # having issues with puburl, pending contact from their devs
+    #print(b.puburl(submission_url))
+    # So, we hack it:
+    with open(DBPATH, 'w') as f:
+        f.write('<html><head><meta http-equiv="Refresh" content="0;url={}" /></head><body></body></html>'.format(submission_url))
 
 if __name__ == '__main__':
     main()
