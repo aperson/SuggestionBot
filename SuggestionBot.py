@@ -110,6 +110,7 @@ def main():
     
     # This wont work unless we have an account dedicated for the bot, which we don't atm.
     last_submission = b.get_feed('/user/{}/submitted/'.format(USERNAME))[0]['data']
+    if strfdate in last_submission['title']: sys.exit(0) # Protect against posting twice in a day
     last_url = last_submission['permalink']
     last_thing_id = last_submission['name']
     last_submission = b.get_feed(last_url)
