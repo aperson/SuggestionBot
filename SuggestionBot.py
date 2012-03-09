@@ -89,8 +89,8 @@ def main():
     '''This is the main bot function that, when ran, will grab the last submission+comments, edit
     the last submission, and create the next submission for the day.'''
     
-    submission_base = '''**Having trouble seeing just the suggestions?**  **Try clicking\
-    *[this](http://db.tt/ZU2USTiK)*./n/nHello /r/Minecraft, welcome to the official suggestion post\
+    submission_base = '''**Having trouble seeing just the suggestions?**  *Try clicking\
+    [this](http://db.tt/ZU2USTiK)*.\n\n-----\n\nHello /r/Minecraft, welcome to the official suggestion post\
     for today. This is the place where all [Suggestion], [Idea], [Mod Request], and other\
     submissions of the like are to go.  If you have an [Idea], post it as a top-level comment and\
     if it's a good one, hopefully it'll be upvoted and commented on.\n\nHere's the top ~three\
@@ -98,7 +98,7 @@ def main():
     
     navigation_template = '''\n\n----\n\nThis submission is for Minecraft suggestions only.  If you\
     have an idea or suggestion regarding the subreddit, please direct it at the\
-    [moderators](http://www.reddit.com/message/compose?to=%2Fr%2FMinecraft)\
+    [moderators](http://www.reddit.com/message/compose?to=%2Fr%2FMinecraft).\
     \n\nNavigation:\n\n[<- prev ]({})'''
     
     comment_template = '''\n\n**{author}** [{score}][+{ups}/-{downs}]:\n\n>{body}'''
