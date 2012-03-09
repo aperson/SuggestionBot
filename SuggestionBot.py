@@ -60,10 +60,11 @@ class Bot:
             return False
     
     def get_feed(self, url):
-        '''Takes a url sans the http://www.reddit.com and without the .json and returns a dict.'''
+        '''Takes a url sans the http://www.reddit.com and returns a dict.'''
         if not url.startswith('/'): url = '/' + url
         if not url.endswith('/'): url = url + '/'
-        with self.opener.open('http://www.reddit.com' + url + '.json') as w:
+        if not '.json' in url: url += '.json'
+        with self.opener.open('http://www.reddit.com' + url) as w:
             output = json.loads(w.read().decode('utf-8'))
             if 'data' in output:
                 return output['data']['children']
@@ -95,7 +96,10 @@ def main():
     if it's a good one, hopefully it'll be upvoted and commented on.\n\nHere's the top ~three\
     comments from the last submission:'''
     
-    navigation_template = '''\n\n----\n\nNavigation:\n\n[<- prev ]({})'''
+    navigation_template = '''\n\n----\n\nThis submission is for Minecraft suggestions only.  If you\
+    have an idea or suggestion regarding the subreddit, please direct it at the\
+    [moderators](http://www.reddit.com/message/compose?to=%2Fr%2FMinecraft)\
+    \n\nNavigation:\n\n[<- prev ]({})'''
     
     comment_template = '''\n\n**{author}** [{score}][+{ups}/-{downs}]:\n\n>{body}'''
     
@@ -106,7 +110,7 @@ def main():
     strfdate = time.strftime('%y/%m/%d')
     
     # get prequisite info about last submission
-    submission_history = b.get_feed('/user/{}/submitted/'.format(USERNAME))
+    submission_history = b.get_feed('/user/{}/submitted/.json?limit=1'.format(USERNAME))
     time.sleep(2)
     
     # This wont work unless we have an account dedicated for the bot, which we don't atm.
