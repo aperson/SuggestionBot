@@ -145,11 +145,12 @@ def main():
     if top_comments:
         count = 0
         for i in top_comments:
-            count += 1
-            formatted_comments += comment_template.format(author=i['author'], score=i['score'],
-                                                           ups=i['ups'], downs=i['downs'],
-                                                           body=i['body'].replace('\n', '\n>')
-                                                          )
+            if i['author'] != '[deleted]':
+                count += 1
+                formatted_comments += comment_template.format(author=i['author'], score=i['score'],
+                                                               ups=i['ups'], downs=i['downs'],
+                                                               body=i['body'].replace('\n', '\n>')
+                                                              )
             if count == 3: break
     else:
         formatted_comments = '\n\nLooks like there were no suggestions yesterday.'
