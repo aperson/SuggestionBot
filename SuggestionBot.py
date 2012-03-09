@@ -107,7 +107,7 @@ def main():
     b = Bot(USERNAME, PASSWORD)
     time.sleep(2)
     
-    strfdate = time.strftime('%y/%m/%d')
+    strfdate = time.strftime('%Y/%m/%d')
     
     # get prequisite info about last submission
     submission_history = b.get_feed('/user/{}/submitted/.json?limit=1'.format(USERNAME))
