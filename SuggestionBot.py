@@ -98,10 +98,28 @@ def main():
     
     navigation_template = '''\n\n----\n\nThis submission is for Minecraft suggestions only.  If you\
     have an idea or suggestion regarding the subreddit, please direct it at the\
-    [moderators](http://www.reddit.com/message/compose?to=%2Fr%2FMinecraft).\
-    \n\nNavigation:\n\n[<- prev ]({})'''
+    [moderators](http://www.reddit.com/message/compose?to=%2Fr%2FMinecraft). Any non-Minecraft\
+    related suggestions will be removed.\
+    \n\nNavigation:\n\n[<- prev ]({}?depth=1)'''
     
-    comment_template = '''\n\n**{author}** [{score}][+{ups}/-{downs}]:\n\n>{body}'''
+    comment_template = '''\n\n**[](/{flair})[{author}]({link})** [{score}][+{ups}/-{downs}]:\n\n>{body}'''
+    
+    # dict to translate css class names to sprite code names
+    flairs = {'blaze' : 'blaze', 'cavespider' : 'cavespider', 'chicken' : 'chicken', 'cow' : 'cow',
+              'creeper' : 'creeper', 'enderdragon' : 'enderdragon', 'enderman' : 'enderman',
+              'ghast' : 'ghast', 'magmacube' : 'magmacube', 'mooshroom' : 'mooshroom', 'pig' : 'pig',
+              'silverfish' : 'silverfish', 'skeleton' : 'skeleton', 'slime' : 'slime',
+              'snowgolem' : 'snowgolem', 'spider' : 'spider', 'steve' : 'steve', 'squid' : 'squid',
+              'testificate' : 'testificate', 'wolf' : 'wolf', 'zombie' : 'zombie',
+              'zombiepigman' : 'zombiepigman', 'sheep' : 'sheep', 'lightgraysheep' : 'sheep_lightgray',
+              'graysheep' : 'sheep_gray', 'blacksheep' : 'sheep_black', 'brownsheep' : 'sheep_brown',
+              'pinksheep' : 'sheep_pink', 'redsheep' : 'sheep_red', 'orangesheep' : 'sheep_orange',
+              'yellowsheep' : 'sheep_yellow', 'limesheep' : 'sheep_lime', 'greensheep' : 'sheep_green',
+              'lightbluesheep' : 'sheep_lightblue', 'cyansheep' : 'sheep_cyan', 'bluesheep' : 'sheep_blue',
+              'purplesheep' : 'sheep_purple', 'magentasheep' : 'sheep_magenta', 'ozelot' : 'ozelot',
+              'catsiamese' : 'cat_siamese', 'catred' : 'cat_red', 'catblack' : 'cat_black',
+              'irongolem' : 'iron_golem', 'redstonehelper' : 'redstone', 'painting' : 'painting',
+              'rftw' : 'rftw', 'mojang' : 'mojang'}
     
     # login
     b = Bot(USERNAME, PASSWORD)
@@ -147,9 +165,16 @@ def main():
         for i in top_comments:
             if i['author'] != '[deleted]':
                 count += 1
+                if i['author_flair_css_class']:
+                    flair = flairs[i['author_flair_css_class']]
+                else:
+                    flair = 'null'
+                
                 formatted_comments += comment_template.format(author=i['author'], score=i['score'],
                                                                ups=i['ups'], downs=i['downs'],
-                                                               body=i['body'].replace('\n', '\n>')
+                                                               body=i['body'].replace('\n', '\n>'),
+                                                               link='/r/{}/comments/{}'.format(
+                                                               SUBREDDIT, i['id']), flair=flair
                                                               )
             if count == 3: break
     else:
@@ -163,7 +188,7 @@ def main():
     time.sleep(2)
     
     # Edit the last submission so it includes a <next> link
-    b.edit_submission(last_thing_id, '{}|[ next ->]({})'.format(last_text.replace('&lt;', '<'
+    b.edit_submission(last_thing_id, '{}|[ next ->]({}?depth=1)'.format(last_text.replace('&lt;', '<'
                                                                  ).replace('&gt;', '>'),
                                                                  submission_url))
     
