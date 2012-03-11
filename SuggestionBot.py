@@ -91,7 +91,7 @@ def main():
     
     submission_base = '''**Having trouble seeing just the suggestions?**  *Try clicking\
     [this](http://db.tt/ZU2USTiK)*.\n\n-----\n\nHello /r/Minecraft, welcome to the official suggestion post\
-    for today. This is the place where all [Suggestion], [Idea], [Mod Request], and other\
+    for this week. This is the place where all [Suggestion], [Idea], [Mod Request], and other\
     submissions of the like are to go.  If you have an [Idea], post it as a top-level comment and\
     if it's a good one, hopefully it'll be upvoted and commented on.\n\nHere's the top three\
     comments from the last submission:'''
@@ -103,6 +103,11 @@ def main():
     \n\nNavigation:\n\n[<- prev ]({}?depth=1)'''
     
     comment_template = '''\n\n**[](/{flair}) [{author}]({link})** [{score}][+{ups}/-{downs}]:\n\n>{body}'''
+    
+        
+    strfdate = time.strftime('%W')
+    
+    submission_title = '''[Suggestion] Post for week #{}'''.format(strfdate)
     
     # dict to translate css class names to sprite code names
     flairs = {'blaze' : 'blaze', 'cavespider' : 'cavespider', 'chicken' : 'chicken', 'cow' : 'cow',
@@ -125,15 +130,13 @@ def main():
     b = Bot(USERNAME, PASSWORD)
     time.sleep(2)
     
-    strfdate = time.strftime('%Y/%m/%d')
-    
     # get prequisite info about last submission
     submission_history = b.get_feed('/user/{}/submitted/.json?limit=1'.format(USERNAME))
     time.sleep(2)
     
     # This wont work unless we have an account dedicated for the bot, which we don't atm.
     last_submission = b.get_feed('/user/{}/submitted/'.format(USERNAME))[0]['data']
-    if strfdate in last_submission['title']: sys.exit(0) # Protect against posting twice in a day
+    if last_submission['title'] == submission_title: sys.exit(0) # Sanity check
     last_url = last_submission['permalink']
     last_thing_id = last_submission['name']
     last_submission = b.get_feed(last_url)
@@ -181,7 +184,6 @@ def main():
     else:
         formatted_comments = '\n\nLooks like there were no suggestions yesterday.'
 
-    submission_title = '''[Suggestion] Post for {}'''.format(strfdate)
     submission_text = submission_base + formatted_comments + navigation_template.format(last_url)
     
     # Submit!
