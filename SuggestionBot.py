@@ -93,7 +93,7 @@ def main():
     [this](http://db.tt/ZU2USTiK)*.\n\n-----\n\nHello /r/Minecraft, welcome to the official suggestion post\
     for today. This is the place where all [Suggestion], [Idea], [Mod Request], and other\
     submissions of the like are to go.  If you have an [Idea], post it as a top-level comment and\
-    if it's a good one, hopefully it'll be upvoted and commented on.\n\nHere's the top ~three\
+    if it's a good one, hopefully it'll be upvoted and commented on.\n\nHere's the top three\
     comments from the last submission:'''
     
     navigation_template = '''\n\n----\n\nThis submission is for Minecraft suggestions only.  If you\
@@ -102,7 +102,7 @@ def main():
     related suggestions will be removed.\
     \n\nNavigation:\n\n[<- prev ]({}?depth=1)'''
     
-    comment_template = '''\n\n**[](/{flair})[{author}]({link})** [{score}][+{ups}/-{downs}]:\n\n>{body}'''
+    comment_template = '''\n\n**[](/{flair}) [{author}]({link})** [{score}][+{ups}/-{downs}]:\n\n>{body}'''
     
     # dict to translate css class names to sprite code names
     flairs = {'blaze' : 'blaze', 'cavespider' : 'cavespider', 'chicken' : 'chicken', 'cow' : 'cow',
@@ -173,8 +173,9 @@ def main():
                 formatted_comments += comment_template.format(author=i['author'], score=i['score'],
                                                                ups=i['ups'], downs=i['downs'],
                                                                body=i['body'].replace('\n', '\n>'),
-                                                               link='/r/{}/comments/{}'.format(
-                                                               SUBREDDIT, i['id']), flair=flair
+                                                               link='/r/{}/comments/{}/a/{}'.format(
+                                                               SUBREDDIT, i['link_id'][3:],
+                                                               [i['id']), flair=flair
                                                               )
             if count == 3: break
     else:
