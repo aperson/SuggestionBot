@@ -178,7 +178,7 @@ def main():
                                                                body=i['body'].replace('\n', '\n>'),
                                                                link='/r/{}/comments/{}/a/{}'.format(
                                                                SUBREDDIT, i['link_id'][3:],
-                                                               [i['id']), flair=flair
+                                                               i['id']), flair=flair
                                                               )
             if count == 3: break
     else:
