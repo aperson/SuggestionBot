@@ -171,7 +171,7 @@ def main():
                 if i['author_flair_css_class']:
                     flair = flairs[i['author_flair_css_class']]
                 else:
-                    flair = 'null'
+                    flair = 'blank'
                 
                 formatted_comments += comment_template.format(author=i['author'], score=i['score'],
                                                                ups=i['ups'], downs=i['downs'],
