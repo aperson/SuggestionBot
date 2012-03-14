@@ -166,7 +166,8 @@ def main():
     if top_comments:
         count = 0
         for i in top_comments:
-            if i['author'] != '[deleted]':
+            #if i['author'] != '[deleted]': # We're a mod now, so we don't need this
+            if i['banned_by']: # If the submission is removed, it'll be None
                 count += 1
                 if i['author_flair_css_class']:
                     flair = flairs[i['author_flair_css_class']]
