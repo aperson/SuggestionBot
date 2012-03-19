@@ -167,7 +167,7 @@ def main():
         count = 0
         for i in top_comments:
             #if i['author'] != '[deleted]': # We're a mod now, so we don't need this
-            if not i['banned_by']: # If the submission is removed, it'll be None
+            if not i['banned_by']: # If the submission isn't removed, it'll be None
                 count += 1
                 if i['author_flair_css_class']:
                     flair = flairs[i['author_flair_css_class']]
@@ -201,7 +201,7 @@ def main():
     #print(b.puburl(submission_url))
     # So, we hack it:
     with open(DBPATH, 'w') as f:
-        f.write('<html><head><meta http-equiv="Refresh" content="0;url={}?depth=1" /></head><body></body></html>'.format(submission_url))
+        f.write(HTML.format(url=submission_url))
 
 if __name__ == '__main__':
     main()
