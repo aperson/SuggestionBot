@@ -204,4 +204,5 @@ def main():
         f.write(HTML.format(url=submission_url))
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, sigint_handler)
     main()
