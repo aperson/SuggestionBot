@@ -17,6 +17,7 @@ class Bot:
     def __init__(self, username, password):
         self.cj = http.cookiejar.CookieJar() 
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cj))
+        self.opener.addheaders = [('User-agent', 'SuggestionBot.py v1')]
         self._login(username, password)
     
     def _login(self, username, password):
