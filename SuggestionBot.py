@@ -32,7 +32,7 @@ class Bot:
     
     def submit(self, subreddit, title, url=None, text=None):
         '''Makes a submission on reddit and returns the url.'''
-        body = {'title' : title, 'sr' : subreddit, 'uh' : self.modhash}
+        body = {'title' : title, 'sr' : subreddit, 'uh' : self.modhash, 'api_type' : 'json'}
         if url:
             body['kind'] = 'link'
             body['url'] = url
@@ -45,7 +45,7 @@ class Bot:
         
         try:
             with self.opener.open('http://www.reddit.com/api/submit', body) as w:
-                link = json.loads(w.read().decode('utf-8'))['jquery'][12][3][0]
+                link = json.loads(w.read().decode('utf-8'))['json']['data']['url']
                 return(link)
         except urllib.error.HTTPError:
             print('Failed to submit!')
